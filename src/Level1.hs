@@ -9,8 +9,8 @@
 -- а в задаче 1.6 — на месте заглушки 'Todo' в типе.
 module Level1 where
 
-import MetaUtils (todo)
-import TypeCheck (Todo)
+-- import MetaUtils (todo)
+-- import TypeCheck (Todo)
 
 
 -- 1.1. Пары из λ-исчисления
@@ -20,9 +20,9 @@ import TypeCheck (Todo)
 -- ваши называются fstChurch и sndChurch.
 -- Ознакомьтесь с тем, как это задание тестируется в test/SpecLevel1.hs.
 
-pair = todo "1.1 pair"
-fstChurch = todo "1.1 fstChurch"
-sndChurch = todo "1.1 sndChurch"
+pair = \x y f -> f x y
+fstChurch = \p -> p const
+sndChurch = \p -> p (flip const)
 
 
 -- 1.2. Взаимная рекурсия
@@ -37,10 +37,16 @@ sndChurch = todo "1.1 sndChurch"
 -- При реализации используйте охранные выражения (guards, см. лекцию).
 
 isEven :: Integer -> Bool
-isEven = todo "1.2 isEven"
+isEven n
+  | n == 0  = True
+  | n < 0   = isOdd(n + 1)
+  | otherwise   = isOdd(n - 1)
 
 isOdd :: Integer -> Bool
-isOdd = todo "1.2 isOdd"
+isOdd n 
+  | n == 0  = False
+  | n < 0   = isEven(n + 1)
+  | otherwise   = isEven(n - 1)
 
 
 -- 1.3. Найдите ошибку
@@ -57,7 +63,7 @@ facBuggy n = go n (n - 1)
       | otherwise = go (acc * n') (n' - 1)
 
 counterexample :: Integer
-counterexample = todo "1.3"
+counterexample = 0
 
 
 -- 1.4. Рекуррентная последовательность
@@ -67,8 +73,13 @@ counterexample = todo "1.3"
 -- Постарайтесь сделать так, чтобы ваша функция работала за линейное время.
 
 itemAt :: Integer -> Integer
-itemAt = todo "1.4"
-
+itemAt n = go n 1 2 3
+  where 
+    go n' b0 b1 b2
+      | n' <= 0  = b0
+      | n' == 1  = b1
+      | n' == 2  = b2
+      | otherwise = go (n' - 1) b1 b2 (b2 - 2 * b1 + 3 * b0)
 
 -- 1.5. Цифры числа
 --
@@ -77,8 +88,13 @@ itemAt = todo "1.4"
 -- последним действием. Используйте параметры-аккумуляторы.
 
 nSumDigits :: Integer -> (Integer, Integer)
-nSumDigits = todo "1.5"
-
+nSumDigits n = go n True (0, 0)
+  where
+    go n' noValue acc
+      | n' > 0      = go (n' `div` 10) False (fst acc + 1, snd acc + n' `mod` 10)
+      | n' < 0      = go (n' `quot` 10) False (fst acc + 1, snd acc - n' `rem` 10)
+      | noValue     = (1, 0)
+      | otherwise   = acc 
 
 -- 1.6. Предскажите тип
 --
@@ -88,13 +104,13 @@ nSumDigits = todo "1.5"
 -- Сначала запишите ответ, и только потом сверьтесь с интерпретатором командой :t.
 
 -- uncurry const
-typeOfUncurryConst :: Todo
+typeOfUncurryConst :: (a, b) -> a
 typeOfUncurryConst = undefined
 
 -- curry fst
-typeOfCurryFst :: Todo
+typeOfCurryFst :: a -> b -> a
 typeOfCurryFst = undefined
 
 -- flip (,)
-typeOfFlipPair :: Todo
+typeOfFlipPair :: b -> a -> (a, b)
 typeOfFlipPair = undefined
