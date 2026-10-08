@@ -20,7 +20,7 @@ import TypeCheck (Todo)
 -- Подумайте, почему нельзя проще. Подсказка: одну и ту же пару должны принимать
 -- и fstChurch, и sndChurch. Проверяется запись типа с точностью до имён переменных.
 
-type Pair a b = Todo
+type Pair a b = forall c. (a -> b -> c) -> c
 type Variant a b = Todo
 type Nat = Todo
 
@@ -32,4 +32,4 @@ type Nat = Todo
 -- Откуда взялась идея: http://conal.net/blog/posts/semantic-editor-combinators
 
 deepFirst :: (a -> a') -> ((a, b), c) -> ((a', b), c)
-deepFirst = todo "3.2"
+deepFirst f p = first (first f) p
